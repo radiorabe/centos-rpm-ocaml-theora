@@ -9,6 +9,7 @@ Source0:  https://github.com/savonet/ocaml-theora/releases/download/%{version}/o
 
 BuildRequires: ocaml
 BuildRequires: ocaml-findlib
+BuildRequires: ocaml-ogg
 BuildRequires: libtheora-devel
 Requires:      libtheora
 
