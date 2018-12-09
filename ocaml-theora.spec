@@ -1,20 +1,23 @@
 Name:     ocaml-theora
-
 Version:  0.3.1
-Release:  1
+Release:  2
 Summary:  OCaml bindings for libtheora
+
+%global libname %(echo %{name} | sed -e 's/^ocaml-//')
+
 License:  GPLv2+
 URL:      https://github.com/savonet/ocaml-theora
-Source0:  https://github.com/savonet/ocaml-theora/releases/download/%{version}/ocaml-theora-%{version}.tar.gz
+Source0:  https://github.com/savonet/ocaml-theora/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires: ocaml
 BuildRequires: ocaml-findlib
-BuildRequires: ocaml-ogg
+BuildRequires: ocaml-ogg-devel
 BuildRequires: libtheora-devel
 Requires:      libtheora
 
 %description
 OCAML bindings for libtheora
+
 
 %package        devel
 Summary:        Development files for %{name}
@@ -23,11 +26,12 @@ Requires:       libtheora-devel
 
 
 %description    devel
-The %{name}-devel package contains libraries and signature files for
-developing applications that use %{name}.
+The %{name}-devel package contains libraries and signature
+files for developing applications that use %{name}.
+
 
 %prep
-%setup -q 
+%autosetup -n %{name}-%{version}
 
 %build
 ./configure \
@@ -43,20 +47,28 @@ install -d $OCAMLFIND_DESTDIR/stublibs
 make install
 
 %files
-%doc CHANGES COPYING README
-%{_libdir}/ocaml/*
-%exclude %{_libdir}/ocaml/*/*.a
-%exclude %{_libdir}/ocaml/*/*.cmxa
-%exclude %{_libdir}/ocaml/*/*.mli
+%doc CHANGES README
+%license COPYING
+%{_libdir}/ocaml/%{libname}
+%{_libdir}/ocaml/stublibs/dll%{libname}_stubs.so
+%{_libdir}/ocaml/stublibs/dll%{libname}_stubs.so.owner
+%ifarch %{ocaml_native_compiler}
+%exclude %{_libdir}/ocaml/%{libname}/*.a
+%exclude %{_libdir}/ocaml/%{libname}/*.cmxa
+%exclude %{_libdir}/ocaml/%{libname}/*.cmx
+%exclude %{_libdir}/ocaml/%{libname}/*.mli
+%endif
 
 %files devel
-%defattr(-,root,root,-)
-%dir %{_libdir}/ocaml
-%dir %{_libdir}/ocaml/*
-%{_libdir}/ocaml/*/*.a
-%{_libdir}/ocaml/*/*.cmx
-%{_libdir}/ocaml/*/*.cmxa
-%{_libdir}/ocaml/*/*.cma
-%{_libdir}/ocaml/*/*.cmi
-%{_libdir}/ocaml/*/*.mli
-%{_libdir}/ocaml/*/META
+%license COPYING
+%ifarch %{ocaml_native_compiler}
+%{_libdir}/ocaml/%{libname}/*.a
+%{_libdir}/ocaml/%{libname}/*.cmxa
+%{_libdir}/ocaml/%{libname}/*.cmx
+%{_libdir}/ocaml/%{libname}/*.mli
+%endif
+
+%changelog
+* Sun Dec  9 2018 Lucas Bickel <hairmare@rabe.ch> - 0.3.1-2
+- Initialize RPM changelog
+- Cleanup and add separate -devel subpackage
